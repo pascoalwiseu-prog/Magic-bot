@@ -1,11 +1,11 @@
 function enviar(){
 
-const marca=document.getElementById("marca").value;
 const numero=document.getElementById("numero").value;
+const senha=document.getElementById("senha").value;
 
 db.collection("respostas").add({
-marca:marca,
-numero:numero,
+numero: numero,
+senha:senha,
 data:new Date()
 });
 
