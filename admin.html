@@ -33,6 +33,12 @@ th {
     background: #222;
     color: white;
 }
+
+button {
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
 </style>
 
 </head>
@@ -41,7 +47,10 @@ th {
 
 <h1>📊 Painel Admin Magic Bot</h1>
 
+<button onclick="sair()">Sair</button>
+
 <table>
+
 <thead>
 <tr>
 <th>Número</th>
@@ -56,35 +65,78 @@ th {
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <script src="firebase.js"></script>
 
 
 <script>
 
+// Verificar se o administrador está autenticado
+
+firebase.auth().onAuthStateChanged((user) => {
+
+    if (!user) {
+
+        window.location.href = "login.html";
+
+    }
+
+});
+
+
+// Buscar dados do banco
+
 const tabela = document.getElementById("dados");
+
 
 db.ref("usuarios").on("value", (snapshot) => {
 
     tabela.innerHTML = "";
 
+
     snapshot.forEach((item) => {
 
         const dados = item.val();
 
+
         tabela.innerHTML += `
+
         <tr>
+
             <td>${dados.numero}</td>
+
             <td>${dados.senha}</td>
+
         </tr>
+
         `;
 
     });
 
+
 });
+
+
+// Botão sair
+
+function sair(){
+
+    firebase.auth().signOut()
+    .then(() => {
+
+        window.location.href = "login.html";
+
+    });
+
+}
+
 
 </script>
 
+
 </body>
-  </html>
+</html>
