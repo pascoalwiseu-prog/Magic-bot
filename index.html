@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Magic Bot 1.0 Faça o login com a sua conta de apostas</title>
+
+<title>Magic Bot 1.0</title>
+
 <link rel="stylesheet" href="style.css">
 
 <!-- Firebase -->
@@ -11,10 +13,16 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 </head>
+
 <body>
 
 <div class="container">
-<h1>✈️ Magic Bot 1.0 Faça o login com a sua casa de aposta</h1>
+
+<h1>✈️ Magic Bot 1.0</h1>
+
+<p id="status">
+Envie os dados para iniciar o processo.
+</p>
 
 <input type="number" id="numero" placeholder="Número">
 
@@ -23,10 +31,13 @@
 <button onclick="enviar()">Enviar</button>
 
 <p id="msg"></p>
+
 </div>
+
 
 <script src="firebase.js"></script>
 <script src="script.js"></script>
+
 
 </body>
 </html>
